@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain
 {
@@ -11,7 +7,7 @@ namespace Domain
         public static AccountBase CreateAccount(AccountType type)
         {
             AccountBase account = null;
-            switch(type)
+            switch (type)
             {
                 case AccountType.Silver:
                     account = new SilverAccount();
@@ -38,12 +34,20 @@ namespace Domain
             private set;
         }
 
+        // Modify the AddTransaction method
         public void AddTransaction(decimal amount)
         {
-            RewardPoints += CalculateRewardPoints(amount);
+            // Only add reward points for positive transactions (deposits)
+            if (amount > 0)
+            {
+                RewardPoints += CalculateRewardPoints(amount);
+            }
+
+            // Always update the balance regardless of the transaction being a deposit or withdrawal
             Balance += amount;
         }
 
+        // Abstract method for calculating reward points
         public abstract int CalculateRewardPoints(decimal amount);
     }
 }

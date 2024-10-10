@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cis3285_unit6_accountstart_f24", "cis3285_unit6_accountstart_f24\cis3285_unit6_accountstart_f24.csproj", "{E36B0CBD-9855-475E-9ED5-7659DE537846}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cis3285_unit6_accountstart_f24Tests", "cis3285_unit6_accountstart_f24Tests\cis3285_unit6_accountstart_f24Tests.csproj", "{FA99EEBA-B65E-4EB7-B37D-C0805D99E135}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cis3285_unit6_accountstart_f24Tests", "cis3285_unit6_accountstart_f24Tests\cis3285_unit6_accountstart_f24Tests.csproj", "{FA99EEBA-B65E-4EB7-B37D-C0805D99E135}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain;
 
 namespace Services
@@ -14,6 +11,8 @@ namespace Services
         decimal GetAccountBalance(string accountName);
         int GetRewardPoints(string accountName);
         void Deposit(string accountName, decimal amount);
-        void Withdrawal(string accountName, decimal amount);
+
+        // Updated to return bool to reflect success/failure of the withdrawal
+        bool Withdrawal(string accountName, decimal amount);
     }
 }

@@ -1,0 +1,173 @@
+﻿@page "/accounts"
+@using Services
+@inject AccountService acctService
+
+@code {
+    private string newAccountName; // Stores the new account name
+    private List<string> acctList = new List<string>(); // Stores all account names
+    private string selectedAccountName; // Tracks the selected account
+    private decimal accountBalance = 0; // Tracks balance
+    private string strDepositAmount; // For deposits
+    private string strWithdrawAmount; // For withdrawals
+    private string errorMessage; // To display error messages
+    private bool showModal = false; // To control modal visibility
+    private bool isNameEmpty = false; // Tracks if account name is empty
+
+    // Method for adding a new account
+    private void btnAddAccount_Click()
+    {
+        if (!string.IsNullOrEmpty(newAccountName))
+        {
+            acctList.Add(newAccountName); // Add new account
+            selectedAccountName = newAccountName;
+            accountBalance = 0; // Reset the account balance for a new account
+            newAccountName = ""; // Clear input
+            errorMessage = ""; // Clear any previous errors
+            isNameEmpty = false; // Reset empty name flag
+        }
+        else
+        {
+            isNameEmpty = true; // Set flag to true if name is empty
+        }
+    }
+
+    // Method for depositing money into the account
+    private void btnDeposit_Click()
+    {
+        try
+        {
+            decimal depositAmount = decimal.Parse(strDepositAmount);
+
+            // Validate deposit amount
+            if (depositAmount <= 0)
+            {
+                errorMessage = "Deposit amount must be positive!";
+                return;
+            }
+
+            // Update the deposit through the account service
+            acctService.Deposit(selectedAccountName, depositAmount);
+            accountBalance = acctService.GetAccountBalance(selectedAccountName); // Update the balance
+            errorMessage = ""; // Clear any previous errors
+        }
+        catch (FormatException)
+        {
+            errorMessage = "Please enter a valid number for the deposit!";
+        }
+    }
+
+    // Method for withdrawing money from the account
+    private void btnWithdraw_Click()
+    {
+        decimal withdrawAmount;
+
+        // Validate the input amount for withdrawal
+        if (!decimal.TryParse(strWithdrawAmount, out withdrawAmount) || withdrawAmount <= 0)
+        {
+            errorMessage = "Please enter a valid positive amount for the withdrawal.";
+            return;
+        }
+
+        // Try to withdraw the amount and check if successful
+        bool withdrawalSuccess = acctService.Withdrawal(selectedAccountName, withdrawAmount);
+
+        if (!withdrawalSuccess)
+        {
+            // If withdrawal failed due to insufficient funds, show the modal
+            showModal = true;
+        }
+        else
+        {
+            // If successful, update the account balance and clear any errors
+            accountBalance = acctService.GetAccountBalance(selectedAccountName);
+            errorMessage = ""; // Clear any previous errors
+        }
+
+        StateHasChanged(); // Trigger UI update
+    }
+
+    // Method to close the modal
+    private void CloseModal()
+    {
+        showModal = false; // Hide the modal
+    }
+}
+
+<!-- Accounts Processing Interface -->
+<h3>Accounts Processing</h3>
+
+<!-- New Account Section -->
+<label for="accountName">New Account Name:</label>
+<input type="text" id="accountName" name="accountName" @bind="newAccountName">
+<button @onclick="btnAddAccount_Click">Add Account</button>
+
+<!-- Error Message if Account Name is Empty -->
+@if (isNameEmpty)
+{
+    <p style="color:red;">Can't submit empty name.</p>
+}
+
+<!-- Error Message Display -->
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red;">@errorMessage</p>
+}
+
+<!-- Display added accounts -->
+@if (acctList.Count > 0)
+{
+    <h4>Current Accounts:</h4>
+    <ul>
+        @foreach (var account in acctList)
+        {
+            <li>@account</li>
+        }
+    </ul>
+}
+
+<!-- Deposit Section -->
+<h4>Deposit into Account</h4>
+<input type="text" @bind="strDepositAmount" placeholder="Enter deposit amount" />
+<button @onclick="btnDeposit_Click">Deposit</button>
+
+<!-- Withdrawal Section -->
+<h4>Withdraw from Account</h4>
+<input type="text" @bind="strWithdrawAmount" placeholder="Enter withdrawal amount" />
+<button @onclick="btnWithdraw_Click">Withdraw</button>
+
+<!-- Display Account Balance -->
+<h4>Account Balance: @accountBalance</h4>
+
+<!-- Modal for Insufficient Funds -->
+@if (showModal)
+{
+    <div class="modal-background">
+        <div class="modal">
+            <h3>Insufficient Funds!</h3>
+            <p>You do not have enough balance to withdraw this amount.</p>
+            <button @onclick="CloseModal">Close</button>
+        </div>
+    </div>
+}
+
+<style>
+    .modal-background {
+        position: center;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+</style>
